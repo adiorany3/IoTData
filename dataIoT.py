@@ -137,6 +137,7 @@ def main():
                     ax_thi.set_title('Proporsi Kategori Stress Ayam Broiler', fontsize=14, fontweight='bold')
                     ax_thi.legend(thi_labels, title='Kategori', loc='center left', bbox_to_anchor=(1, 0.5))
                     st.pyplot(fig_thi)
+                    plt.close(fig_thi)
                     summary = merged_thi['THI_Interpretasi'].value_counts()
                     total = summary.sum()
                     kesimpulan = ''
@@ -224,6 +225,7 @@ Serta sumber-sumber lain terkait manajemen lingkungan ayam broiler di Indonesia.
                     ax_wci.set_title('Proporsi Wind Chill Effect pada Ayam Broiler', fontsize=14, fontweight='bold')
                     ax_wci.legend(wci_labels, title='Kategori', loc='center left', bbox_to_anchor=(1, 0.5))
                     st.pyplot(fig_wci)
+                    plt.close(fig_wci)
                     wci_summary = wind_merged['WCI_Interpretasi'].value_counts()
                     wci_total = wci_summary.sum()
                     wci_kesimpulan = ''
@@ -253,7 +255,9 @@ Serta sumber-sumber lain terkait wind chill effect pada unggas tropis.''')
             # Gabungan THI dan Wind Chill Effect
             if show_temp and show_humidity and show_wind and not temp_df.empty and not humidity_df.empty and not wind_df.empty and not merged_thi.empty and not wind_merged.empty:
                 thi_df = merged_thi[['record_datetime', 'sensor_name', 'value_calibration_temp', 'value_calibration_hum', 'THI', 'THI_Interpretasi']].copy()
+                del merged_thi
                 wci_df = wind_merged[['record_datetime', 'sensor_name', 'value_calibration_wind', 'WCI', 'WCI_Interpretasi']].copy()
+                del wind_merged
                 combined = pd.merge(
                     thi_df,
                     wci_df,
@@ -325,12 +329,16 @@ Serta sumber-sumber lain terkait wind chill effect pada unggas tropis.''')
                 ax_comb.set_title('Proporsi Interpretasi Gabungan THI & Wind Chill', fontsize=14, fontweight='bold')
                 ax_comb.legend(labels, title='Kategori', loc='center left', bbox_to_anchor=(1, 0.5))
                 st.pyplot(fig_comb)
+                plt.close(fig_comb)
                 st.download_button(
                     label='Download Gabungan THI & Wind Chill (XLSX)',
                     data=to_xlsx_bytes(combined),
                     file_name='gabungan_thi_windchill.xlsx',
                     mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                 )
+                del thi_df
+                del wci_df
+                del combined
             if not (show_temp or show_humidity or show_wind):
                 st.info('Please select at least one sensor type to display.')
         except Exception as e:
